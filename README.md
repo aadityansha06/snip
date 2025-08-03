@@ -20,9 +20,9 @@
 Just build the code and run the `snip.exe` file from your terminal:
 
 ```bash
-snip.exe init
-snip.exe add file.c
-snip.exe commit -file.c -m"initial version"
+snip init
+snip add -file.c
+snip commit -file.c -m"added main logic"
 ````
 Option 2: Use via system environmental variable (like Git)
 
