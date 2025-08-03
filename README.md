@@ -24,7 +24,10 @@ snip init
 snip add -file.c
 snip commit -file.c -m"added main logic"
 ````
-Option 2: Use via system environmental variable (like Git)
+Option 2: Use via system environmental variable (like Git) 
+<br>
+[ ⚠️ This is causing issue, more about it below in known issue section]
+<br>
 
 1. Place the snip.exe in a folder (e.g., C:\snip\).
 
