@@ -82,3 +82,56 @@ token = strtok(NULL, "-");        // "hello.c"
    //If none of the characters are found then the length of the string is returned.
 
     command[strcspn(command,"\n")]='\0';
+
+TO detetct os of the user and open ide use this ; i got to know about this funcion through ai because i don't think anywhere else it's availabe about how to detct os and open theri ide in comparison mode 
+
+
+
+void open_diff_view(char *file1, char *file2) {
+    char command[PATH_MAX * 3] = "";
+
+#ifdef _WIN32
+    if (system("where code >nul 2>&1") == 0) {
+        snprintf(command, sizeof(command), "code --diff \"%s\" \"%s\"", file1, file2);
+    } else if (system("where pycharm64.exe >nul 2>&1") == 0) {
+        snprintf(command, sizeof(command), "pycharm64 \"%s\" \"%s\"", file1, file2);
+    } else if (system("where sublime_text >nul 2>&1") == 0) {
+        snprintf(command, sizeof(command), "subl \"%s\" \"%s\"", file1, file2);
+    } else {
+        MessageBox(NULL, "No supported IDE found. Please open the files manually.", "Snip Compare", MB_OK);
+        return;
+    }
+
+#elif __linux__
+    if (system("which code > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "code --diff \"%s\" \"%s\"", file1, file2);
+    } else if (system("which pycharm > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "pycharm \"%s\" \"%s\" &", file1, file2);
+    } else if (system("which subl > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "subl \"%s\" \"%s\" &", file1, file2);
+    } else if (system("which meld > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "meld \"%s\" \"%s\" &", file1, file2);
+    } else {
+        printf("No supported editor found. Please open \"%s\" and \"%s\" manually.\n", file1, file2);
+        return;
+    }
+
+#elif __APPLE__
+    if (system("which code > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "code --diff \"%s\" \"%s\"", file1, file2);
+    } else if (system("which pycharm > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "pycharm \"%s\" \"%s\" &", file1, file2);
+    } else if (system("which subl > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "subl \"%s\" \"%s\" &", file1, file2);
+    } else {
+        printf("No supported editor found. Please open \"%s\" and \"%s\" manually.\n", file1, file2);
+        return;
+    }
+#endif
+
+    // Finally, launch the command if set
+    if (strlen(command) > 0) {
+        system(command);
+    }
+}
+
