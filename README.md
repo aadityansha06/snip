@@ -1,117 +1,221 @@
-# 🧠 snip - Minimal Git-like Version Tracker for Code Snippets
+# 🚀 snip - Lightweight Git-like Version Control System
 
-`snip` is a lightweight command-line tool that works like a mini Git for your code snippets. It allows you to **init**, **add**, and **commit** files while tracking changes over time.
-
----
-
-## 📦 Features
-
-- Initialize a local `.snip` tracking folder
-- Add files to track
-- Commit changes with messages
-- Works both as a normal `.exe` and via system-wide commands
+`snip` is a minimal yet powerful command-line version control system written in C. It provides Git-like functionality for tracking file changes, managing versions, and comparing code across different commits - all stored locally in a `.snip` directory.
 
 ---
 
-## 🛠 Installation & Usage
+## ✨ Features
 
-### 🔸 Option 1: Run as `.exe` directly
+- 🏗️ **Initialize** local repositories with `.snip` tracking
+- 📁 **Add** files to version control tracking
+- 💾 **Commit** changes with timestamped messages
+- 📖 **View logs** with commit history and versions
+- 🔄 **Restore** any previous version of your files
+- 🔍 **Compare** different versions side-by-side in your IDE
+- 🌐 **Cross-platform** support (Windows, Linux, macOS)
+- 🎯 **Smart file discovery** - works from any subdirectory
 
-Just build the code and run the `snip.exe` file from your terminal:
+---
 
+## 🛠️ Installation
+
+### Build from Source
+```bash
+gcc -o snip snip.c
+```
+
+### System-wide Installation (Optional)
+1. Place `snip.exe` in a dedicated folder (e.g., `C:\tools\snip\`)
+2. Add the folder to your system's PATH environment variable
+3. Restart your terminal
+
+---
+
+## 📋 Commands Reference
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `snip init` | Initialize version control in current directory | `snip init` |
+| `snip add -<filename>` | Add file to tracking | `snip add -main.c` |
+| `snip commit -<filename> -m"<message>"` | Commit file changes | `snip commit -main.c -m"fixed bug"` |
+| `snip log -<filename>` | Show commit history | `snip log -main.c` |
+| `snip write -<filename> -<version>` | Restore specific version | `snip write -main.c -2` |
+| `snip compare -<filename> v-<num> and v-<num>` | Compare two versions | `snip compare -main.c v-1 and v-3` |
+
+---
+
+## 🚦 Quick Start
+
+### 1. Initialize Repository
 ```bash
 snip init
-snip add -file.c
-snip commit -file.c -m"added main logic"
-````
-Option 2: Use via system environmental variable (like Git) 
-<br>
-[ ⚠️ This is causing issue, more about it below in known issue section]
-<br>
+# Output: snip initiated
+```
 
-1. Place the snip.exe in a folder (e.g., C:\snip\).
+### 2. Add File to Tracking
+```bash
+snip add -hello.c
+# Output: snip added hello.c Successfully..
+```
 
+### 3. Make Your First Commit
+```bash
+snip commit -hello.c -m"initial version"
+# Output: Commit message: initial version
+#         committed
+#         Successfully inserted..!!
+```
 
-2. Add that folder to System Environment Variables → Path.
+### 4. View Commit History
+```bash
+snip log -hello.c
+```
+```
++-----+-----------------------------------------------------------------------------+
+| Time                 | 		Commit-msg                | version |
++-----+-----------------------------------------------------------------------------+
+| 04-08-2025 14:30:22 | initial version                        | 1      |
++-----+-----------------------------------------------------------------------------+
+```
 
+### 5. Restore Previous Version
+```bash
+snip write -hello.c -1
+# Output: Over-write Successfully of version-1!!
+```
 
+---
 
-Now you can run snip from any terminal:
-```` bash
+## 🔍 Advanced Features
 
+### Version Comparison
+Compare any two versions of your file in your preferred IDE:
+```bash
+snip compare -main.c v-1 and v-3
+```
+
+**Supported IDEs:**
+- Visual Studio Code (`code --diff`)
+- PyCharm (`pycharm`)
+- Sublime Text (`subl`)
+- Meld (Linux only)
+
+The tool automatically detects your installed IDE and opens a side-by-side diff view.
+
+### Smart File Discovery
+`snip` automatically searches upward through directories to find:
+- The `.snip` repository folder
+- Source files you want to commit
+
+This means you can run `snip` commands from any subdirectory within your project.
+
+---
+
+## 📁 Directory Structure
+
+When you run `snip init`, it creates:
+```
+your-project/
+├── .snip/
+│   └── filename.ext/
+│       ├── log.txt          # Commit history
+│       └── .version/
+│           ├── 1            # Version 1 of file
+│           ├── 2            # Version 2 of file
+│           └── ...
+└── your-files...
+```
+
+---
+
+## 💡 Usage Examples
+
+### Basic Workflow
+```bash
+# Start tracking a new project
 snip init
-snip add file.c
-snip commit -file.c -m"added main logic"
-````
+
+# Add multiple files
+snip add -main.c
+snip add -utils.h
+snip add -config.txt
+
+# Make commits with descriptive messages
+snip commit -main.c -m"added main function"
+snip commit -utils.h -m"helper functions"
+
+# View what you've done
+snip log -main.c
+```
+
+### Working with Versions
+```bash
+# Save current state
+snip commit -script.py -m"working version before optimization"
+
+# Make changes to script.py...
+
+# Commit optimized version
+snip commit -script.py -m"optimized algorithm performance"
+
+# Compare versions
+snip compare -script.py v-1 and v-2
+
+# Rollback if needed
+snip write -script.py -1
+```
 
 ---
 
-🔧 Commands
+## ⚠️ Known Issues & Limitations
 
-Command	Usage
+### Command Line Argument Parsing
+- **Spaces in commit messages**: Use quotes carefully - `snip commit -file.c -m"message with spaces"`
+- **PowerShell compatibility**: Some argument parsing issues in PowerShell; Command Prompt recommended
+- **File paths with spaces**: May cause parsing errors
 
-snip init	Initializes .snip directory to start tracking
-snip add <filename>	Adds file to tracking list
-snip commit -<filename> -m"<message>"	Commits file changes with a message
-snip status	Shows files and their tracked status
-snip log	Displays commit history
-snip help or snip --help	Shows help menu
-
-
-> ✅ Tip: -<filename> in commit must begin with a dash (e.g., -main.c) just like git.
-
-
-
+### Platform-Specific Notes
+- **Windows**: Uses `\` path separators and Windows-specific directory functions
+- **Path limits**: Respects `PATH_MAX` system limits
+- **IDE detection**: Automatically detects available editors for comparison feature
 
 ---
 
-⚠️ Known Issues
+## 🔧 Technical Details
 
-🐛 Problem with spaces in PowerShell or VS Code terminal
-
-When using system-wide snip command from folders with spaces in path, or if arguments have . or quotes:
-
-snip commit -example.c -m"message with space"
-
-It may reconstruct command incorrectly like:
-
-snip commit -example .c -mexample
-
-This is due to how arguments are split in certain shells (especially PowerShell). The tool currently assumes space as a delimiter and doesn't yet fully support quoted strings or escape characters robustly.
-
-> ❌ Urgent: Avoid using paths or argument values with spaces, or use Command Prompt (cmd.exe) instead of PowerShell.
-> Need someone to fix this , pls reach me out 
-
-
-
+- **Language**: C (C99 standard)
+- **Dependencies**: Standard C library only
+- **Storage**: Local filesystem (no network required)
+- **Memory**: Dynamic linked list for commit history
+- **File handling**: Binary-safe file copying
+- **Cross-platform**: Conditional compilation for different OS
 
 ---
 
-👨‍💻 Developer Notes
+## 🤝 Contributing
 
-This project is built in C language, and manually handles argument parsing without getopt.
+We welcome contributions! Areas for improvement:
 
-Feel free to fork and contribute:
-
-Adding support for full quoted strings
-
-Improving commit metadata
-
-Creating visual diff logs
-
-
+- [ ] Better argument parsing (supporting getopt)
+- [ ] Enhanced commit message handling
+- [ ] Branch support
+- [ ] Config file support
+- [ ] Better error handling
+- [ ] Unit tests
 
 ---
----
 
-## 📫 Reach Me
+## 📞 Contact & Support
 
-- 🐦 X (Twitter): [@aadityansha_06](https://x.com/aadityansha_06)
-- 📬 Telegram: [@Aadityansha](https://t.me/Aadityansha)
-<hr>
-📄 License
-
-MIT License — use freely and credit appreciated.
-
+- 🐦 **Twitter**: [@aadityansha_06](https://x.com/aadityansha_06)
+- 📱 **Telegram**: [@Aadityansha](https://t.me/Aadityansha)
 
 ---
+
+## 📄 License
+
+MIT License - Feel free to use, modify, and distribute. Credit appreciated but not required.
+
+---
+
+> 💡 **Pro Tip**: `snip` works great for small projects, scripts, and configuration files where you need quick version tracking without the complexity of Git!
