@@ -19,7 +19,7 @@ void writingfile(char path[PATH_MAX], char filename[100], char prev_version[PATH
 // it will find it in whole folder googin upward and then read data from it and write it inside the prev-version i.e main-01.c
 void printlog(); // print all previous logs
 void overwrite(char command[100], char path[PATH_MAX]);
-
+void compare(char command[100], char filepath[PATH_MAX]);
 void help();
 char *current_time()
 {
@@ -39,7 +39,7 @@ typedef struct node
     struct node *next;
 
 } node;
-
+int arggc=1;
 node *createnode()
 {
     node *addr;
@@ -71,6 +71,55 @@ char *trim_whitespace(char *str)
 
     return str;
 }
+// detecting users OS and launching their IDE if avialble in side by side view to comapre code (i used chat gpt for this logic as i dotn know much about thses function)
+void open_diff_view(char *file1, char *file2) {
+    char command[PATH_MAX * 3] = "";
+
+#ifdef _WIN32
+    if (system("where code >nul 2>&1") == 0) {
+        snprintf(command, sizeof(command), "code --diff \"%s\" \"%s\"", file1, file2);
+    } else if (system("where pycharm64.exe >nul 2>&1") == 0) {
+        snprintf(command, sizeof(command), "pycharm64 \"%s\" \"%s\"", file1, file2);
+    } else if (system("where sublime_text >nul 2>&1") == 0) {
+        snprintf(command, sizeof(command), "subl \"%s\" \"%s\"", file1, file2);
+    } else {
+        MessageBox(NULL, "No supported IDE found. Please open the files manually.", "Snip Compare", MB_OK);
+        return;
+    }
+
+#elif __linux__
+    if (system("which code > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "code --diff \"%s\" \"%s\"", file1, file2);
+    } else if (system("which pycharm > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "pycharm \"%s\" \"%s\" &", file1, file2);
+    } else if (system("which subl > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "subl \"%s\" \"%s\" &", file1, file2);
+    } else if (system("which meld > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "meld \"%s\" \"%s\" &", file1, file2);
+    } else {
+        printf("No supported editor found. Please open \"%s\" and \"%s\" manually.\n", file1, file2);
+        return;
+    }
+
+#elif __APPLE__
+    if (system("which code > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "code --diff \"%s\" \"%s\"", file1, file2);
+    } else if (system("which pycharm > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "pycharm \"%s\" \"%s\" &", file1, file2);
+    } else if (system("which subl > /dev/null 2>&1") == 0) {
+        snprintf(command, sizeof(command), "subl \"%s\" \"%s\" &", file1, file2);
+    } else {
+        printf("No supported editor found. Please open \"%s\" and \"%s\" manually.\n", file1, file2);
+        return;
+    }
+#endif
+
+    // Finally, launch the command if set
+    if (strlen(command) > 0) {
+        system(command);
+    }
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -176,102 +225,120 @@ int main(int argc, char *argv[])
 
                 overwrite(command, exist);
             }
+            else if (strcmp(arrg, "compare") == 0)
+            { // compare the vesrions with snip compare -hello.c v-3 and v-4 ; one must commit before comapring
+                char *path = checkvsc();
+                char *exist = file_exist(command, path);
+                if (path == NULL)
+                {
+                    printf("snip is not initiated\n");
+                    exit(1);
+                }
+                else if (exist == NULL)
+                {
+                    printf("snip is not added pls use  - snip add\n");
+                    exit(1);
+                }
+                compare(command, exist);
+            }
         }
     }
-    else if (argc > 1)
+   else if (argc > 1)
+{
+    arggc=2;// if argument is command line to detct for commit msg prasssing
+    // Build command string from arguments, skipping program name
+    char full_command[512] = "";
+    for (int i = 1; i < argc; ++i) // Start from i=1 to skip program name
     {
-        char full_command[512] = "";
-        for (int i = 0; i < argc; ++i)
-        {
-            // Add quotes back only for arguments that contain spaces (optional)
-            if (strchr(argv[i], ' ') != NULL)
-            {
-                strcat(full_command, "\"");
-                strcat(full_command, argv[i]);
-                strcat(full_command, "\"");
-            }
-            else
-            {
-                strcat(full_command, argv[i]);
-            }
+        strcat(full_command, argv[i]);
+        if (i < argc - 1)
+            strcat(full_command, " ");
+    }
 
-            if (i < argc - 1)
-                strcat(full_command, " ");
+    printf("Command: %s\n", full_command);
+
+    // Parse the command
+    int ret;
+    char cmd[20], arg1[100];
+    ret = sscanf(full_command, "%s %s", cmd, arg1);
+
+    if (ret == 2 && strcmp(cmd, "snip") == 0)
+    {
+        if (strcmp(arg1, "init") == 0)
+        {
+            initial(full_command);
         }
-
-        printf("full command through command line argument is : %s\n", full_command);
-
-        // Now reuse the same command parsing logic you use for interactive input
-        int ret;
-        char cmd[20], arg1[100];
-        ret = sscanf(full_command, "%s %s", cmd, arg1);
-
-        if (ret == 2 && strcmp(cmd, "snip") == 0)
+        else if (strcmp(arg1, "add") == 0)
         {
-            if (strcmp(arg1, "init") == 0)
+            char *path = checkvsc();
+            if (!path)
             {
-                initial(full_command);
+                printf("snip is not initiated\n");
+                return 1;
             }
-            else if (strcmp(arg1, "add") == 0)
+            addfile(full_command, path);
+        }
+        else if (strcmp(arg1, "commit") == 0)
+        {
+            char *path = checkvsc();
+            if (!path)
             {
-                char *path = checkvsc();
-                if (!path)
-                {
-                    printf("snip is not initiated\n");
-                    return 1;
-                }
-                addfile(full_command, path);
+                printf("snip is not initiated\n");
+                return 1;
             }
-            else if (strcmp(arg1, "commit") == 0)
+            char *exist = file_exist(full_command, path);
+            if (!exist)
             {
-                char *path = checkvsc();
-                if (!path)
-                {
-                    printf("snip is not initiated\n");
-                    return 1;
-                }
-                char *exist = file_exist(full_command, path);
-                if (!exist)
-                {
-                    printf("snip is not added, please use - snip add\n");
-                    return 1;
-                }
-                commit_msg(full_command, exist);
+                printf("snip is not added, please use - snip add\n");
+                return 1;
             }
-            else if (strcmp(arg1, "log") == 0)
+            commit_msg(full_command, exist);
+        }
+        else if (strcmp(arg1, "log") == 0)
+        {
+            char *path = checkvsc();
+            char *exist = file_exist(full_command, path);
+            if (!path || !exist)
             {
-                char *path = checkvsc();
-                char *exist = file_exist(full_command, path);
-                if (!path || !exist)
-                {
-                    printf("snip not initialized or file not added\n");
-                    return 1;
-                }
-                readlog(exist);
-                printlog();
+                printf("snip not initialized or file not added\n");
+                return 1;
             }
-            else if (strcmp(arg1, "write") == 0)
+            readlog(exist);
+            printlog();
+        }
+        else if (strcmp(arg1, "write") == 0)
+        {
+            char *path = checkvsc();
+            char *exist = file_exist(full_command, path);
+            if (!path || !exist)
             {
-                char *path = checkvsc();
-                char *exist = file_exist(full_command, path);
-                if (!path || !exist)
-                {
-                    printf("snip not initialized or file not added\n");
-                    return 1;
-                }
-                readlog(exist);
-                overwrite(full_command, exist);
+                printf("snip not initialized or file not added\n");
+                return 1;
             }
-            else
+            readlog(exist);
+            overwrite(full_command, exist);
+        }
+        else if (strcmp(arg1, "compare") == 0)
+        {
+            char *path = checkvsc();
+            char *exist = file_exist(full_command, path);
+            if (!path || !exist)
             {
-                printf("Unknown snip command: %s\n", arg1);
+                printf("snip not initialized or file not added\n");
+                return 1;
             }
+            compare(full_command, exist);
         }
         else
         {
-            printf("Invalid command format.\n");
+            printf("Unknown snip command: %s\n", arg1);
         }
     }
+    else
+    {
+        printf("Invalid command format.\n");
+    }
+}
 
     return 0;
 }
@@ -391,7 +458,7 @@ char *file_exist(char command[100], char path[PATH_MAX])
     char cmd[100];
     char filename[20];
 
-    if (sscanf(command, "snip commit -%s", filename) == 1 || sscanf(command, "snip log -%s", filename) == 1 || sscanf(command, "snip write -%s", filename) == 1 || sscanf(command, "snip add -%s", filename) == 1)
+    if (sscanf(command, "snip commit -%s", filename) == 1 || sscanf(command, "snip log -%s", filename) == 1 || sscanf(command, "snip write -%s", filename) == 1 || sscanf(command, "snip add -%s", filename) == 1 || sscanf(command, "snip compare -%s", filename) == 1)
     {
         // printf("\n%s is filename in file-exist",filename);
         static char file[PATH_MAX];
@@ -425,17 +492,20 @@ void commit_msg(char command[100], char path[PATH_MAX])
 
     char filename[100];
     char msg[100] = "no-commit-msg"; // Default message
-    
+
     // Extract filename first
-    if (sscanf(cmd, "snip commit -%s", filename) != 1)
+    if (arggc==1)
     {
+        if (sscanf(cmd, "snip commit -%s", filename) != 1)
+        {
         printf("Invalid command format. Use: snip commit -filename.ext [-m\"message\"]\n");
         exit(1);
-    }
-
+        }
+            
     // Clean filename - remove any trailing message parts
     char *space_pos = strchr(filename, ' ');
-    if (space_pos != NULL) {
+    if (space_pos != NULL)
+    {
         *space_pos = '\0'; // Cut at first space
     }
 
@@ -450,7 +520,8 @@ void commit_msg(char command[100], char path[PATH_MAX])
     char *msg_start = strstr(command, "-m\"");
     if (msg_start != NULL)
     {
-        if (sscanf(msg_start, "-m\"%[^\"]", msg) != 1) {
+        if (sscanf(msg_start, "-m\"%[^\"]", msg) != 1)
+        {
             // If quoted parsing fails, try without quotes
             sscanf(msg_start + 2, "%s", msg); // Skip "-m"
         }
@@ -472,12 +543,52 @@ void commit_msg(char command[100], char path[PATH_MAX])
         }
     }
 
+    }
+    else{ // if comaand is command line arugment
+         // Parse command line arguments differently
+        char temp_command[100];
+        strcpy(temp_command, command);
+        
+        // Use strtok to parse tokens
+        char *token = strtok(temp_command, " ");
+        token = strtok(NULL, " "); // skip "snip"
+        token = strtok(NULL, " "); // skip "commit"
+        
+        // Get filename (should start with -)
+        if (token != NULL && token[0] == '-')
+        {
+            strcpy(filename, token + 1); // Remove the '-' prefix
+        }
+        else
+        {
+            printf("Invalid command format. Use: snip commit -filename.ext -m\"message\"\n");
+            exit(1);
+        }
+
+        // Look for -m flag
+        token = strtok(NULL, " ");
+        if (token != NULL && strcmp(token, "-m") == 0)
+        {
+            token = strtok(NULL, "\""); // Get message up to quote or space
+            if (token != NULL)
+            {
+                strcpy(msg, token);
+                // Remove trailing quote if present
+                int len = strlen(msg);
+                if (len > 0 && msg[len-1] == '"')
+                    msg[len-1] = '\0';
+            }
+        }
+
+    }
+    
+
     printf("Commit message: %s\n", msg);
     printf("Debug: Extracted filename: '%s'\n", filename);
 
     struct stat s;
     snprintf(check_log, sizeof(check_log), "%s\\log.txt", path);
-    
+
     // Reset start
     start = NULL;
     readlog(path);
@@ -521,11 +632,11 @@ void writingfile(char path[PATH_MAX], char filename[100], char prev_version[PATH
     int found = 0;
     struct stat s;
     getcwd(current_dir, sizeof(current_dir));
-    
+
     while (1)
     {
         snprintf(check_path, sizeof(check_path), "%s\\%s", current_dir, filename);
-        
+
         // check for the file which user wants to commit
         if (stat(check_path, &s) == 0 && S_ISREG(s.st_mode))
         {
@@ -548,7 +659,7 @@ void writingfile(char path[PATH_MAX], char filename[100], char prev_version[PATH
             found = 1;
             break; // Important: break after finding the file
         }
-        
+
         // If we reach root, stop
         if (strlen(current_dir) <= 3 && current_dir[1] == ':' && current_dir[2] == '\\')
         {
@@ -566,7 +677,7 @@ void writingfile(char path[PATH_MAX], char filename[100], char prev_version[PATH
             break;
         }
     }
-    
+
     if (found != 1)
     {
         printf("\nNO such file named %s found!!\nPls check whether the file and .snip exist in same directory or not", filename);
@@ -587,7 +698,7 @@ void overwrite(char command[100], char path[PATH_MAX])
     int found = 0;
     int ver = 0; // version
     char pre_version[PATH_MAX];
-    
+
     if (sscanf(command, "snip write -%s -%d", filename, &ver) == 2)
     {
         snprintf(pre_version, sizeof(pre_version), "%s\\.version\\%d", path, ver); // Fixed path separators
@@ -601,22 +712,23 @@ void overwrite(char command[100], char path[PATH_MAX])
             if (stat(ver_path, &s) == 0 && S_ISREG(s.st_mode))
             {
                 FILE *pre_ver, *current;
-                
+
                 // Check if version file exists first
-                if (stat(pre_version, &s) != 0 || !S_ISREG(s.st_mode)) {
+                if (stat(pre_version, &s) != 0 || !S_ISREG(s.st_mode))
+                {
                     printf("Version %d doesn't exist for file %s\n", ver, filename);
                     return;
                 }
-                
+
                 current = fopen(ver_path, "r+"); // Open in write mode to overwrite
                 pre_ver = fopen(pre_version, "r");
-                
+
                 if (current == NULL || pre_ver == NULL)
                 {
                     printf("Error during reading and writing file or version %d doesn't exist\n", ver);
                     exit(1);
                 }
-                
+
                 char ch;
                 while ((ch = fgetc(pre_ver)) != EOF)
                 {
@@ -628,7 +740,7 @@ void overwrite(char command[100], char path[PATH_MAX])
                 found = 1;
                 break; // Important: break after successful overwrite
             }
-            
+
             // If we reach root, stop
             if (strlen(current_dir) <= 3 && current_dir[1] == ':' && current_dir[2] == '\\')
             {
@@ -652,7 +764,7 @@ void overwrite(char command[100], char path[PATH_MAX])
         printf("Invalid command format. Use: snip write -filename.ext -version\n");
         return;
     }
-    
+
     if (found == 0)
     {
         printf("File not found: %s\n", filename);
@@ -708,7 +820,91 @@ void readlog(char path[PATH_MAX])
         exit(1);
     }
 }
+void compare(char command[100], char filepath[PATH_MAX])
+{
+    char filename[30], ver_path1[PATH_MAX], ver_path2[PATH_MAX];
+    int ver1, ver2;
 
+    if (sscanf(command, "snip compare -%s v-%d and v-%d", filename, &ver1, &ver2) == 3)
+    {
+        char current_dir[PATH_MAX];
+        snprintf(ver_path1, sizeof(ver_path1), "%s\\.version\\%d", filepath, ver1);
+        snprintf(ver_path2, sizeof(ver_path2), "%s\\.version\\%d", filepath, ver2);
+        struct stat s1, s2;
+        
+        if (stat(ver_path1, &s1) == 0 && S_ISREG(s1.st_mode) &&
+            stat(ver_path2, &s2) == 0 && S_ISREG(s2.st_mode))
+        {
+            getcwd(current_dir, sizeof(current_dir));
+            char temp_path1[PATH_MAX], temp_path2[PATH_MAX];
+            snprintf(temp_path1, sizeof(temp_path1), "%s\\%d-%s", current_dir, ver1, filename);
+            snprintf(temp_path2, sizeof(temp_path2), "%s\\%d-%s", current_dir, ver2, filename);
+
+            FILE *v1, *v2, *temp1, *temp2;
+            v1 = fopen(ver_path1, "r");
+            v2 = fopen(ver_path2, "r");
+            temp1 = fopen(temp_path1, "w");
+            temp2 = fopen(temp_path2, "w");
+            
+            if (v1 == NULL || v2 == NULL || temp1 == NULL || temp2 == NULL)
+            {
+                printf("Error opening file during comparison\n");
+                exit(1);
+            }
+
+            char ch;
+            // Copy version 1 content
+            while ((ch = fgetc(v1)) != EOF)
+            {
+                fputc(ch, temp1);
+            }
+            
+            // Copy version 2 content
+            while ((ch = fgetc(v2)) != EOF)
+            {
+                fputc(ch, temp2);
+            }
+
+            fclose(v1);
+            fclose(v2);
+            fclose(temp1);
+            fclose(temp2);
+
+            open_diff_view(temp_path1, temp_path2);
+            
+            printf("\nAfter comparing press 1 to exit and clean up temporary files: ");
+            int del = 0;
+            
+            while (del != 1)
+            {
+                scanf("%d", &del);
+                if (del == 1)
+                {
+                    // Delete the temporary files
+                    if (remove(temp_path1) == 0)
+                       printf("");
+                    else
+                        printf("Error deleting %s\n", temp_path1);
+                        
+                    if (remove(temp_path2) == 0)
+                        printf("Comparision closed sucessfully Now you can remove the file\n");
+                    else
+                        printf("Error deleting %s\n", temp_path2);
+                }
+                else
+                {
+                    printf("Please press 1 to exit: ");
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("\nInvalid format. Use: snip compare -filename.ext v-X and v-Y\n");
+        printf("Unable to find one of the versions. Check with 'snip log -filename.ext'\n");
+        exit(1);
+    }
+}
 void printlog()
 {
 
