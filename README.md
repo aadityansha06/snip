@@ -180,6 +180,10 @@ snip write -script.py -1
 - **IDE detection**: Automatically detects available editors for comparison feature
 
 ---
+## ⚠️ To-better-Understand-code Please read "Extra-req-func-for-snip" this file  
+- it has much of the function which you might need to know to get better undertsanding over code
+If you stuck with any of them please refer to some Ai for better understading because there is very few webiste or maybe not because some-of them i got to know form ai like gpt,calude
+----
 
 ## 🔧 Technical Details
 
