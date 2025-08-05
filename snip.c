@@ -123,14 +123,23 @@ void open_diff_view(char *file1, char *file2) {
 
 int main(int argc, char *argv[])
 {
+    int exit_request=0; // for check exit
+//If you type snip with no further arguments in a terminal, again argc == 1, and interactive mode starts.
     if (argc == 1)
     {
-        printf("Welcome to snip\n Enter your command..");
+        printf("Welcome to snip\n ");
+        printf("\n Enter snip --help for help \n Enter snip --exit to exit\n ");
+        while (exit_request!=1)
+        {
+            /* code */
+       
+        
+        printf("\nEnter your command..");
 
         char command[100];
 
         fgets(command, sizeof(command), stdin);
-        printf("your command is %s", command);
+       // printf("your command is %s", command);
         // The strcspn() function searches for the first occurrence in a string of any of the specified characters and returns the length of the string up to that point.
         // If none of the characters are found then the length of the string is returned.
 
@@ -155,7 +164,7 @@ int main(int argc, char *argv[])
                 if (path != NULL)
                 {
                     printf("snip is already initiated\n");
-                    exit(1);
+                     continue;
                 }
             }
             else if (strcmp(arrg, "add") == 0) // snip add -hello.c
@@ -213,12 +222,12 @@ int main(int argc, char *argv[])
                 if (path == NULL)
                 {
                     printf("snip is not initiated\n");
-                    exit(1);
+                     continue;
                 }
                 else if (exist == NULL)
                 {
                     printf("snip is not added pls use  - snip add\n");
-                    exit(1);
+                      continue;
                 }
 
                 readlog(exist); // exist contain path till folder except log file
@@ -232,116 +241,74 @@ int main(int argc, char *argv[])
                 if (path == NULL)
                 {
                     printf("snip is not initiated\n");
-                    exit(1);
+                      continue;
                 }
                 else if (exist == NULL)
                 {
                     printf("snip is not added pls use  - snip add\n");
-                    exit(1);
+                    continue;
                 }
                 compare(command, exist);
             }
+                else if (strcmp(arrg, "--version") == 0) {
+                // Create full command for existing functions
+                printf("snip version 1.01 is currently running on your system \n Check out : https://github.com/aadityansha06/snip for any new realeases,feedback and contributation");
+            }else if(strcmp(arrg,"--help")==0){
+                 help();
+            }else if(strcmp(arrg,"--exit")==0){
+                 exit_request=1;
+            }
+            else{
+                  printf("snip unable to recognise '%s' pls use snip init to get started or use snip --help",arrg);
+}
+            }else{
+                 printf("\nunable to recognise '%s' pls use snip init to get started or use snip --help",command);
+            }
+         }
         }
-    }
+    
    else if (argc > 1)
 {
     arggc=2;// if argument is command line to detct for commit msg prasssing
     // Build command string from arguments, skipping program name
-    char full_command[512] = "";
-    for (int i = 1; i < argc; ++i) // Start from i=1 to skip program name
-    {
-        strcat(full_command, argv[i]);
-        if (i < argc - 1)
-            strcat(full_command, " ");
-    }
+    char command[100];
+    strcpy(command, argv[1]);
+        
+        for (int i = 2; i < argc; i++) {
+            strcat(command, " ");
+            strcat(command, argv[i]);
+        }
+        
+        // Now parse without expecting "snip" prefix
+        char arrg[20];
+        int ret = sscanf(command, "%s", arrg);
+        
+        if (ret == 1) {
+            if (strcmp(arrg, "--version") == 0) {
+                // Create full command for existing functions
+                printf("snip version 1.01 is currently running on your system \n Check out : https://github.com/aadityansha06/snip for any new realeases,feedback and contributation");
+            }else if(strcmp(arrg,"--help")==0){
+                 help();
+            }
+    
 
-    printf("Command: %s\n", full_command);
-
-    // Parse the command
-    int ret;
-    char cmd[20], arg1[100];
-    ret = sscanf(full_command, "%s %s", cmd, arg1);
-
-    if (ret == 2 && strcmp(cmd, "snip") == 0)
-    {
-        if (strcmp(arg1, "init") == 0)
-        {
-            initial(full_command);
-        }
-        else if (strcmp(arg1, "add") == 0)
-        {
-            char *path = checkvsc();
-            if (!path)
-            {
-                printf("snip is not initiated\n");
-                return 1;
+        
+else{
+    printf("snip unable to recognise '%s'",arrg);
+}
+        }else{
+                 printf("\nunable to recognise '%s' pls use snip init to get started or use snip --help",arrg);
             }
-            addfile(full_command, path);
-        }
-        else if (strcmp(arg1, "commit") == 0)
-        {
-            char *path = checkvsc();
-            if (!path)
-            {
-                printf("snip is not initiated\n");
-                return 1;
-            }
-            char *exist = file_exist(full_command, path);
-            if (!exist)
-            {
-                printf("snip is not added, please use - snip add\n");
-                return 1;
-            }
-            commit_msg(full_command, exist);
-        }
-        else if (strcmp(arg1, "log") == 0)
-        {
-            char *path = checkvsc();
-            char *exist = file_exist(full_command, path);
-            if (!path || !exist)
-            {
-                printf("snip not initialized or file not added\n");
-                return 1;
-            }
-            readlog(exist);
-            printlog();
-        }
-        else if (strcmp(arg1, "write") == 0)
-        {
-            char *path = checkvsc();
-            char *exist = file_exist(full_command, path);
-            if (!path || !exist)
-            {
-                printf("snip not initialized or file not added\n");
-                return 1;
-            }
-            readlog(exist);
-            overwrite(full_command, exist);
-        }
-        else if (strcmp(arg1, "compare") == 0)
-        {
-            char *path = checkvsc();
-            char *exist = file_exist(full_command, path);
-            if (!path || !exist)
-            {
-                printf("snip not initialized or file not added\n");
-                return 1;
-            }
-            compare(full_command, exist);
-        }
-        else
-        {
-            printf("Unknown snip command: %s\n", arg1);
-        }
     }
-    else
+    if (exit_request==1)
     {
-        printf("Invalid command format.\n");
+        printf("\nsnip exit Sucessfully");
     }
+    
+    
+ return 0;
 }
 
-    return 0;
-}
 void initial(char command[100])
 {
     struct stat s; // checking folder whether vsc(version-system control) exist or not
@@ -410,7 +377,7 @@ void addfile(char command[100], char path[PATH_MAX])
     else
     {
         printf("\nworng command pls use snip add -filename\n");
-        exit(1);
+          
     }
 
     // '\\' is used to print \ as charcter not as command
@@ -480,7 +447,7 @@ char *file_exist(char command[100], char path[PATH_MAX])
     else
     {
         printf("\nworng command pls use snip --help to know more\n");
-        exit(1);
+       
     }
 }
 void commit_msg(char command[100], char path[PATH_MAX])
@@ -499,7 +466,7 @@ void commit_msg(char command[100], char path[PATH_MAX])
         if (sscanf(cmd, "snip commit -%s", filename) != 1)
         {
         printf("Invalid command format. Use: snip commit -filename.ext [-m\"message\"]\n");
-        exit(1);
+       
         }
             
     // Clean filename - remove any trailing message parts
@@ -513,7 +480,7 @@ void commit_msg(char command[100], char path[PATH_MAX])
     if (filename[0] == '-' || strchr(filename, '.') == NULL)
     {
         printf("Invalid filename format: %s\n", filename);
-        exit(1);
+       
     }
 
     // Extract commit message - look for -m" pattern
@@ -562,7 +529,7 @@ void commit_msg(char command[100], char path[PATH_MAX])
         else
         {
             printf("Invalid command format. Use: snip commit -filename.ext -m\"message\"\n");
-            exit(1);
+            
         }
 
         // Look for -m flag
@@ -620,7 +587,7 @@ void commit_msg(char command[100], char path[PATH_MAX])
     }
     else
     {
-        printf("log doesn't exist\n");
+        printf("log doesn't exist, please make sure your file and .snip are inisde same directory\n");
     }
 }
 
@@ -699,7 +666,7 @@ void overwrite(char command[100], char path[PATH_MAX])
     int ver = 0; // version
     char pre_version[PATH_MAX];
 
-    if (sscanf(command, "snip write -%s -%d", filename, &ver) == 2)
+    if (sscanf(command, "snip write -%s v-%d", filename, &ver) == 2)
     {
         snprintf(pre_version, sizeof(pre_version), "%s\\.version\\%d", path, ver); // Fixed path separators
         struct stat s;
@@ -761,13 +728,13 @@ void overwrite(char command[100], char path[PATH_MAX])
     }
     else
     {
-        printf("Invalid command format. Use: snip write -filename.ext -version\n");
+        printf("Invalid command format. Use: snip write -filename.ext version-num (e.g v-3 for version 3) \n");
         return;
     }
 
     if (found == 0)
     {
-        printf("File not found: %s\n", filename);
+        printf("File not found: %s\n please make sure your filename is correct or your file and .snip exist in same folder\n", filename);
     }
 }
 void readlog(char path[PATH_MAX])
@@ -935,12 +902,14 @@ void help()
 
     printf("\t+-----+------------------------snip-HELP-----------------------------------------------------------------------------------+-----------------------------------------------------------------------------------+\n");
     printf("\n\t| %-40s | %-70s\n", "Command", "\t\tDiscription");
+         printf("\n\t| %-40s | %-70s\n", "snip ", "\t\tTo start with command line argument directly  for init,commit compare,view-logs and over-write");
     printf("\n\t| %-40s | %-70s\n", "snip init", "\t\tTo initialize snip for that particular folder \n\t\t\t\t\t\t\t\t!!!It will only work with the file inside that folder which contain '.snip' and the subfolder of that folder containing '.snip' ");
     printf("\n\t| %-40s | %-70s\n", "snip add -filename.ext", "\t\tTo add the file for the first time , so that any chnages made to them later will be stored here");
     printf("\n\t| %-40s | %-70s\n", "snip commit -filename.ext -m\"commit-msg\" ", "\t\tTo save the changes made to that file along with the msg that what chnages has made ");
     printf("\n\t| %-40s | %-70s\n", "snip log -filename.ext", "\t\tTo see the all previous commit with timestamp and it's version as 1,2,... !!!'Remember the version shown at top will be the recent version'");
-    printf("\n\t| %-40s | %-70s\n", "snip write -filename.ext -version", "\t\tTo overwrite the previous version to your current file");
+    printf("\n\t| %-40s | %-70s\n", "snip write -filename.ext v-2 (e.g. v-2 for version-2)", "\t\tTo overwrite the previous version to your current file");
+     printf("\n\t| %-40s | %-70s\n", "snip compare -filename.ext v-2 and v-3 ", "\t\tTo compare the desired version of  your current file,!commit before comparing!");
     printf("\n\t| %-40s | %-70s\n", "snip --version", "\t\tTo check the your  version or to download the latest version, also to check out the repo link for feedback and contributation");
 
-    printf("\t+-----+---------------------------------------------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------+\n");
+    printf("\t+-----+---------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+\n");
 }
