@@ -287,6 +287,7 @@ Enter your command.. snip --exit
 ---
 
 ## 🐛 Known Issues & Limitations
+Created in just 3 days so it may have 😅
 
 ### Parsing Limitations
 - **Complex commit messages**: Avoid using tab characters in commit messages (used as delimiters)
