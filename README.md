@@ -1,49 +1,43 @@
-# 🚀 snip - Lightweight Git-like Version Control System
+# snip - Lightweight Git-like Version Control System
 
 `snip` is a minimal yet powerful command-line version control system written in C. It provides Git-like functionality for tracking file changes, managing versions, and comparing code across different commits - all stored locally in a `.snip` directory.
 
-**🎯 Ready to use! No compilation needed - just download and run!**
+Ready to use! No compilation needed - just download and run.
 
 ---
 
-## ✨ Features
+## What it does
 
-- 🏗️ **Initialize** local repositories with `.snip` tracking
-- 📁 **Add** files to version control tracking  
-- 💾 **Commit** changes with timestamped messages
-- 📖 **View logs** with commit history and versions
-- 🔄 **Restore** any previous version of your files
-- 🔍 **Compare** different versions side-by-side in your IDE
-- 🌐 **Cross-platform** support (Windows, Linux, macOS)
-- 🎯 **Smart file discovery** - works from any subdirectory
-- 🖥️ **Interactive mode** - run `snip` without arguments for a command prompt
-- 📦 **Command line mode** - run commands directly as arguments
+The tool lets you track changes to your files locally without needing a full Git setup. It's got basic version control features like committing changes, viewing history, restoring old versions, and comparing different versions side-by-side. Everything gets stored in a `.snip` folder in your project directory.
 
----
+It works from any subdirectory in your project, which is pretty convenient. You can run it in two modes - either type `snip` to get an interactive prompt, or just run commands directly from your terminal. Works on Windows, Linux, and macOS.
 
-## 🛠️ Installation
+## Installation
 
-### Quick Installation (✅Recommended)
-1. **Download** the latest `snip.exe` from [Releases](https://github.com/aadityansha06/snip/releases)
-2. **Place** `snip.exe` in a dedicated folder (e.g., `C:\tools\snip\`)
-3. **Add** the folder to your system's PATH environment variable
-4. **Restart** your terminal
-5. **Verify** installation: `snip --version`
-6. **Get started**: `snip`
+### Quick Setup (Recommended)
 
-### Build from Source (Optional)
+Get the latest `snip.exe` from the [Releases page](https://github.com/aadityansha06/snip/releases) and put it somewhere like `C:\tools\snip\`. Add that folder to your PATH so you can run it from anywhere. Restart your terminal and you're good to go.
+
+Check if it works:
+```bash
+snip --version
+```
+
+### Building from source
+
+If you want to compile it yourself:
 ```bash
 gcc -o snip snip.c
 ```
 
 ---
 
-## 🎮 Usage Modes
+## How to use it
 
-### Interactive Mode
- 
-step 1:
-Run `snip` without arguments to enter interactive mode:
+### Interactive mode
+
+Just run `snip` without any arguments and you'll get a command prompt:
+
 ```bash
 snip
 # Welcome to snip
@@ -53,8 +47,9 @@ snip
 # Enter your command..
 ```
 
-### Command Line Mode  
-step 2: Run commands directly as arguments:
+### Direct commands
+
+Or run commands straight away:
 ```bash
 snip init
 snip add -main.c
@@ -63,74 +58,54 @@ snip commit -main.c -m"initial commit"
 
 ---
 
+## Commands
 
-| Command | Description | Interactive Mode | Command Line Mode |
-|---------|-------------|------------------|-------------------|
-| `init` | Initialize version control | `snip init` | `snip init` |
-| `add` | Add file to tracking | `snip add -main.c` | `snip add -main.c` |
-| `commit` | Commit file changes | `snip commit -main.c -m"message"` | `snip commit -main.c -m"message"` |
-| `log` | Show commit history | `snip log -main.c` | `snip log -main.c` |
-| `write` | Restore specific version | `snip write -main.c v-2` | `snip write -main.c v-2` |
-| `compare` | Compare two versions | `snip compare -main.c v-1 and v-2` | `snip compare -main.c v-1 and v-2` |
-| `--version` | Show version info | `snip --version` | `snip --version` |
-| `--help` | Show help | `snip --help` | `snip --help` |
-| `--exit` | Exit interactive mode | `snip --exit` | N/A |
+| Command | What it does | Example |
+|---------|-------------|---------|
+| `init` | Start tracking in current directory | `snip init` |
+| `add` | Track a specific file | `snip add -main.c` |
+| `commit` | Save current version with a message | `snip commit -main.c -m"fixed bug"` |
+| `log` | Show all saved versions | `snip log -main.c` |
+| `write` | Restore an old version | `snip write -main.c v-2` |
+| `compare` | Compare two versions | `snip compare -main.c v-1 and v-2` |
+| `--version` | Check which version you're running | `snip --version` |
+| `--help` | Show help info | `snip --help` |
+| `--exit` | Exit interactive mode | `snip --exit` |
 
-> **Note**: In interactive mode, you still need to type the full command including `snip` prefix (e.g., `snip init`, `snip commit`, etc.)
+Note: In interactive mode, you still type the full command including `snip` at the start.
 
 ---
 
-## 🚦 Getting Started
+## Getting started
 
-### Installation Check
+### Basic workflow
+
+First, check everything's working:
 ```bash
 snip --version
-# Output: snip version 1.01 is currently running on your system 
-#         Check out : https://github.com/aadityansha06/snip for any new releases, feedback and contribution
 ```
 
-### Start Interactive Mode
-```bash
-snip
-# Welcome to snip
-# Enter snip --help for help
-# Enter snip --exit to exit
-# 
-# Enter your command..
-```
-
-### Your First Repository
-
-### 1. Initialize Repository
+Start tracking your project:
 ```bash
 snip init
-# Output: snip initiated
 ```
 
-### 2. Add File to Tracking
+Add a file you want to track:
 ```bash
 snip add -hello.c
-# Output: snip added hello.c Successfully..
 ```
-> 
 
-
-### 3. Make Your First Commit
+Make your first commit:
 ```bash
 snip commit -hello.c -m"initial version"
-# Output: Commit message: initial version
-#         committed
-#         Successfully inserted..!!
-
----
-**Note**: First you must have hello.c as file inside the directory or in the sub-directory in which you are initializing snip
-for more check out 📁 Directory Structure below
----
 ```
-### 4. View Commit History
+
+See what you've saved:
 ```bash
 snip log -hello.c
 ```
+
+The output looks something like:
 ```
 	+-----+-----------------------------------------------------------------------------+
 	| Time                 | 		Commit-msg                | version |
@@ -141,121 +116,75 @@ snip log -hello.c
 Use snip write "-filename -version"..  to overwrite previous version
 ```
 
-### 5. Restore Previous Version
+If you mess something up and want to go back:
 ```bash
 snip write -hello.c v-1
-# Output: Over-write Successfully of version-1!!
 ```
 
 ---
 
-## 🔍 Advanced Features
+## Comparing versions
 
-### Version Comparison
-Compare any two versions of your file in your preferred IDE:
+You can compare any two versions in your code editor:
 ```bash
 snip compare -main.c v-1 and v-3
 ```
 
-**Supported IDEs by Platform:**
+The tool will try to open the diff in whatever IDE you have installed. It checks for VS Code, PyCharm, Sublime Text, and on Linux it also tries Meld. If it can't find anything, it'll let you know.
 
-**Windows:**
-- Visual Studio Code (`code --diff`)
-- PyCharm (`pycharm64`)
-- Sublime Text (`subl`)
-- Falls back to MessageBox if no IDE found
+After you're done comparing, press `1` to clean up the temporary files it created.
 
-**Linux:**
-- Visual Studio Code (`code --diff`)
-- PyCharm (`pycharm`)
-- Sublime Text (`subl`)
-- Meld (`meld`)
+## How it finds your files
 
-**macOS:**
-- Visual Studio Code (`code --diff`)
-- PyCharm (`pycharm`)
-- Sublime Text (`subl`)
+The nice thing about snip is you don't have to be in the exact directory where you initialized it. It searches upward through parent directories to find the `.snip` folder and your source files. So you can run commands from anywhere in your project tree.
 
-The tool automatically detects your installed IDE and opens a side-by-side diff view. After comparison, press `1` to clean up temporary files.
+## Directory structure
 
-### Smart File Discovery
-`snip` automatically searches upward through directories to find:
-- The `.snip` repository folder (looks for `.snip` in current and parent directories)
-- Source files you want to commit (searches upward from current directory)
+When you run `snip init`, it creates a `.snip` folder with subfolders for each file you track. Inside those are version files and a log.txt with your commit history.
 
-This means you can run `snip` commands from any subdirectory within your project.
-
-### Automatic Timestamping
-Every commit is automatically timestamped with the format: `DD-MM-YYYY HH:MM:SS`
+Full disclosure: I used AI to generate the fancy tree diagrams and formatted output examples in this documentation because honestly I don't have time to mess with that UI stuff. The code itself is all me though.
 
 ---
 
-## 📁 Directory Structure
+## Example workflows
 
-When you run `snip init`, it creates:
-```
-your-project/
-├── .snip/
-│   └── filename.ext/           # Folder for each tracked file
-│       ├── log.txt            # Commit history with messages and timestamps
-│       └── .version/          # Version storage directory
-│           ├── 1              # Version 1 of file
-│           ├── 2              # Version 2 of file
-│           └── ...
-└── your-files...
-```
+### Tracking multiple files
 
-### Log File Format
-Each line in `log.txt` contains:
-```
-commit-message	DD-MM-YYYY HH:MM:SS	version-number
-```
-
----
-
-## 💡 Usage Examples
-
-### Basic Workflow
 ```bash
-# Start tracking a new project
 snip init
-
-# Add multiple files
 snip add -main.c
 snip add -utils.h
 snip add -config.txt
 
-# Make commits with descriptive messages
 snip commit -main.c -m"added main function"
 snip commit -utils.h -m"helper functions"
 
-# View what you've done
 snip log -main.c
 ```
 
-### Working with Versions
+### Working on something experimental
+
 ```bash
-# Save current state
+# Save your working version first
 snip commit -script.py -m"working version before optimization"
 
-# Make changes to script.py...
+# Make your changes to script.py...
 
-# Commit optimized version  
+# Commit the new version
 snip commit -script.py -m"optimized algorithm performance"
 
-# Compare versions
+# See what changed
 snip compare -script.py v-1 and v-2
 
-# Rollback if needed
+# Roll back if the optimization broke something
 snip write -script.py v-1
 ```
 
-### Interactive Mode Workflow
+### Using interactive mode
+
 ```bash
-# Enter interactive mode
 snip
 
-# Now you can run commands without the 'snip' prefix:
 Enter your command.. snip init
 Enter your command.. snip add -main.c
 Enter your command.. snip commit -main.c -m"first commit"
@@ -265,112 +194,96 @@ Enter your command.. snip --exit
 
 ---
 
-## ⚠️ Important Notes & Best Practices
+## Things to keep in mind
 
-### Command Syntax
-- **File names**: Always prefix with `-` (e.g., `-main.c`, `-script.py`)
-- **Commit messages**: Use quotes for messages with spaces: `-m"your message here"`
-- **Version format**: Use `v-` prefix for versions (e.g., `v-1`, `v-2`)
-- **Comparison**: Use `and` between versions: `v-1 and v-2`
+### Command syntax rules
 
-### File Requirements
-- Files must exist in the current directory or its parent directories
-- The `.snip` folder must be in the same directory tree as your files
-- File extensions are preserved in version storage
+File names need a dash in front: `-main.c`, `-script.py`
 
-### Version Management
-- Versions start from 1 and increment automatically
-- Most recent version is shown at the top of logs
-- Each commit creates a complete copy of the file (not just diffs)
-- No commit size limits (limited only by disk space)
+Commit messages with spaces need quotes: `-m"your message here"`
 
----
+Versions use `v-` prefix: `v-1`, `v-2`
 
-## 🐛 Known Issues & Limitations
-Created in just 3 days so it may have 😅
+When comparing, use `and` between versions: `v-1 and v-2`
 
-### Parsing Limitations
-- **Complex commit messages**: Avoid using tab characters in commit messages (used as delimiters)
-- **File names with spaces**: May cause parsing issues
-- **Special characters**: Some special characters in file names may not work properly
+### Requirements
 
-### Platform-Specific Issues
-- **Windows path separators**: Uses `\\` internally, may cause issues on mixed environments
-- **Command line vs Interactive**: Some argument parsing differences between modes
-- **IDE detection**: Relies on system PATH for IDE detection
+Files have to exist somewhere in your current directory or above it. The `.snip` folder needs to be in the same directory tree as your files. File extensions get preserved when versions are stored.
 
-### Memory & Performance  
-- **Large files**: Creates complete copies, not efficient for very large files
-- **Many versions**: Log reading loads entire history into memory
-- **No cleanup**: Old versions are never automatically removed
+### How versioning works
+
+Versions start at 1 and go up automatically. The most recent version shows up at the top when you run `log`. Each commit makes a complete copy of your file, not just the changes. There's no size limit except your disk space.
 
 ---
 
-## 🔧 Technical Implementation Details
+## Known problems
 
-### Core Components
-- **Language**: C (uses Windows-specific functions like `_mkdir`)
-- **Data Structure**: Linked list for storing commit history in memory
-- **File Operations**: Binary-safe file copying with `fgetc`/`fputc`
-- **Path Handling**: Uses `PATH_MAX` and Windows path conventions
-- **Time Handling**: Uses `strftime` for consistent timestamp formatting
+I built this in about 3 days so there's definitely some rough edges.
 
-### Key Functions
-- `initial()` - Creates `.snip` directory
-- `checkvsc()` - Searches upward for `.snip` folder  
-- `addfile()` - Creates tracking structure for new files
-- `commit_msg()` - Handles commit logic and message parsing
-- `writingfile()` - Copies current file to version storage
-- `readlog()` - Loads commit history into linked list
-- `compare()` - Creates temporary files and launches IDE diff
-- `open_diff_view()` - Cross-platform IDE detection and launch
+### Parsing issues
 
-### Memory Management
-- Uses `malloc()` for linked list nodes
-- Static buffers for path strings
-- No explicit cleanup (relies on program termination)
+Don't use tab characters in your commit messages because those are used as delimiters internally. File names with spaces might cause problems. Some special characters in file names don't work properly.
+
+### Platform stuff
+
+The code uses Windows-style path separators internally which might cause issues if you're mixing environments. There are some differences in how arguments get parsed between command line and interactive mode. IDE detection depends on having the programs in your system PATH.
+
+### Performance and memory
+
+It creates complete copies of files, so it's not efficient for really large files. If you have tons of versions, loading the log reads everything into memory at once. Old versions never get cleaned up automatically, they just sit there forever.
 
 ---
 
-## 🚀 Future Enhancements
+## Things that could be better
 
-Potential areas for improvement:
-- [ ] Better argument parsing with `getopt`
-- [ ] Support for binary files
-- [ ] Branching and merging
-- [ ] Configuration file support  
-- [ ] Diff-based storage for efficiency
-- [ ] Automatic cleanup of old versions
-- [ ] Better error handling and validation
-- [ ] Unit test suite
-- [ ] Cross-platform path handling improvements
+Some ideas for future improvements:
 
----
+Better argument parsing with something like `getopt`
 
-## 📞 Contact & Support
+Support for binary files
 
-- 🐛 **Issues**: Report bugs or suggest features
-- 🐦 **Twitter**: [@aadityansha_06](https://x.com/aadityansha_06)
-- 📱 **Telegram**: [@Aadityansha](https://t.me/Aadityansha)
-- 🌐 **GitHub**: [https://github.com/aadityansha06/snip](https://github.com/aadityansha06/snip)
-- 📦 **Releases**: [Download Latest Version](https://github.com/aadityansha06/snip/releases)
+Branching and merging
 
----
+Configuration files
 
-## 📄 License
+Store diffs instead of complete copies
 
-MIT License - Feel free to use, modify, and distribute.
+Automatic cleanup of old versions
+
+Better error handling and validation
+
+Unit tests
+
+Better cross-platform path handling
 
 ---
 
-## 🙏 Acknowledgments
+## Contact and support
 
-- IDE detection logic assisted by AI tools
-- Cross-platform compatibility considerations
-- Community feedback and suggestions
+Report bugs or suggest features on GitHub
+
+Twitter: [@aadityansha_06](https://x.com/aadityansha_06)
+
+Telegram: [@Aadityansha](https://t.me/Aadityansha)
+
+GitHub: [https://github.com/aadityansha06/snip](https://github.com/aadityansha06/snip)
+
+Download: [Latest Release](https://github.com/aadityansha06/snip/releases)
 
 ---
 
-> 💡 **Pro Tip**: `snip` works best for small to medium-sized text files where you need quick version tracking without the complexity of Git. Perfect for scripts, configuration files, and small projects!
+## License
 
-> ⚡ **Performance Note**: Each commit stores a complete copy of your file, making it simple but potentially storage-intensive for large files or many versions.
+MIT License - do whatever you want with it.
+
+---
+
+## Credits
+
+Got help from AI tools for the IDE detection logic. Thanks to everyone who gave feedback and suggestions.
+
+---
+
+Pro tip: This works best for small to medium text files where you need quick version tracking without Git's complexity. Perfect for scripts, config files, and small projects.
+
+Performance note: Each commit stores a complete copy of your file, so it's simple but can use a lot of disk space if you have large files or tons of versions.
