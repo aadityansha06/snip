@@ -1,4 +1,4 @@
-// No AI is used in mkaig of this Project or if used it's mentioned there explicitly ( if you think it's Ai generated due to emoji and formating ) it's your problem then , fuck u 
+
 
 
 
