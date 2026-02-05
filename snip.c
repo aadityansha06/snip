@@ -161,11 +161,10 @@ int main(int argc, char *argv[]) {
       char cmd[10]; // to detetct snip
       char arrg[20];
 
-      ret = sscanf(
-          command, "%s %s ", cmd,
-          arrg); // slipt string and stor in diff vairbale
-                 //  ret will ocntain the number of words the sscanf returend
-                 // forinstance snip init ; ret = 2
+      ret = sscanf(command, "%s %s ", cmd, arrg);
+      /* slipt string and stor in diff vairbale
+        ret will ocntain the number of words the sscanf returend
+        forinstance snip init ; ret = 2 */
       if (ret == 2 && strcmp(cmd, "snip") == 0) {
         if (strcmp(arrg, "init") == 0) {
           initial(command); // snip init // intiate first time to create vsc in
