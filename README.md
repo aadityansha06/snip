@@ -260,21 +260,34 @@ Better cross-platform path handling
 
 ## Contact and support
 
-Report bugs or suggest features on GitHub
+**Report bugs or suggest features:** [GitHub Issues](https://github.com/aadityansha06/snip/issues)
 
-Twitter: [@aadityansha_06](https://x.com/aadityansha_06)
+**View releases and download:** [GitHub Releases](https://github.com/aadityansha06/snip/releases)
 
-Telegram: [@Aadityansha](https://t.me/Aadityansha)
+**Follow for updates:**
+- Twitter: [@aadityansha_06](https://x.com/aadityansha_06)
+- Telegram: [@Aadityansha](https://t.me/Aadityansha)
 
-GitHub: [https://github.com/aadityansha06/snip](https://github.com/aadityansha06/snip)
-
-Download: [Latest Release](https://github.com/aadityansha06/snip/releases)
+**Project Repository:** [https://github.com/aadityansha06/snip](https://github.com/aadityansha06/snip)
 
 ---
 
 ## License
 
-MIT License - do whatever you want with it.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+You are free to:
+- Use this software for any purpose
+- Copy, modify, and distribute it
+- Include it in proprietary applications
+
+The only requirement is to include the original license notice.
+
+---
+
+## Contributing
+
+Want to contribute? Great! Please check out the [Contributing Guide](Developer-Docs/CONTRIBUTING.md) to learn how to follow our code conventions and contribute to the project.
 
 ---
 
